@@ -19,48 +19,33 @@
 
 ## 安装
 
-脚本为**单文件、零第三方依赖**（纯 Python 标准库），只需 Python 3.7+。
+### 方式一：作为 AI Agent 的 Skill 安装（推荐）
 
-### 1. 安装 Python（已有可跳过）
+本仓库是标准的 [Agent Skill](SKILL.md) 格式（`SKILL.md` + frontmatter）。**直接把 GitHub 仓库链接发给任意支持 Skill 的 Agent**（WorkBuddy、Claude Code 等），说一句"把这个 skill 安装到你的 skills 目录"，Agent 会自动拉取并装好。
 
-**macOS**
+也可以手动安装——把仓库克隆（或只复制 `SKILL.md`）到对应目录：
+
 ```bash
-python3 --version        # 先检查
-brew install python      # 没有则安装
-```
-或从 [python.org/downloads](https://www.python.org/downloads/) 下载安装包。
+# WorkBuddy
+git clone https://github.com/xccElephant/wechat-article-media-download.git ~/.workbuddy/skills/wechat-article-media-download
 
-**Windows**
-- 从 [python.org/downloads](https://www.python.org/downloads/) 下载安装
-- ⚠️ 安装时勾选 **"Add python.exe to PATH"**
-- PowerShell 中验证：`python --version`
-
-**Linux (Debian/Ubuntu)**
-```bash
-sudo apt update && sudo apt install -y python3
+# Claude Code
+git clone https://github.com/xccElephant/wechat-article-media-download.git ~/.claude/skills/wechat-article-media-download
 ```
 
-### 2. 获取脚本
+装好后，给 Agent 发一个 `mp.weixin.qq.com/s/...` 链接并要求下载视频/图片，它就会按 SKILL.md 的流程执行。
+
+### 方式二：直接运行脚本
+
+`scripts/download.py` 是单文件零依赖脚本（纯 Python 3.7+ 标准库），克隆或下载后直接运行：
 
 ```bash
 git clone https://github.com/xccElephant/wechat-article-media-download.git
 cd wechat-article-media-download
-
-# 没有 git 也可以只下载单个文件：
-# curl -O https://raw.githubusercontent.com/xccElephant/wechat-article-media-download/main/scripts/download.py
-```
-
-完毕——无需 `pip install`。
-
-## 使用
-
-```bash
-# 仅依赖 Python 3.7+ 标准库，无需安装任何第三方包
-python3 scripts/download.py <文章链接> [输出目录]
-
-# 示例
 python3 scripts/download.py "https://mp.weixin.qq.com/s/ICb4P_FqTZVgaeMvZs_9dg" ./output
 ```
+
+Windows PowerShell 下用 `python` 代替 `python3`。
 
 输出结构：
 

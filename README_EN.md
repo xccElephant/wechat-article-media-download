@@ -19,54 +19,33 @@ No WeChat API is called — the `videoplayer` API family now requires an authent
 
 ## Installation
 
-The script is a **single Python file with zero third-party dependencies** (stdlib only). You just need Python 3.7+.
+### Option 1: Install as an AI-agent skill (recommended)
 
-### 1. Install Python (skip if you already have it)
+This repo follows the standard [Agent Skill](SKILL.md) format (`SKILL.md` with frontmatter). **Just send this GitHub repo link to any skill-capable agent** (WorkBuddy, Claude Code, etc.) and say "install this skill into your skills directory" — the agent will fetch and set it up automatically.
 
-**macOS**
+Manual installation — clone the repo (or just copy `SKILL.md`) into the right directory:
+
 ```bash
-# Check first
-python3 --version
-# If missing, install via Homebrew
-brew install python
-```
-Or download the installer from [python.org/downloads](https://www.python.org/downloads/).
+# WorkBuddy
+git clone https://github.com/xccElephant/wechat-article-media-download.git ~/.workbuddy/skills/wechat-article-media-download
 
-**Windows**
-- Download from [python.org/downloads](https://www.python.org/downloads/) and run the installer
-- ⚠️ Check **"Add python.exe to PATH"** during installation
-- Verify in PowerShell: `python --version`
-
-**Linux (Debian/Ubuntu)**
-```bash
-sudo apt update && sudo apt install -y python3
+# Claude Code
+git clone https://github.com/xccElephant/wechat-article-media-download.git ~/.claude/skills/wechat-article-media-download
 ```
 
-### 2. Get the script
+Once installed, send the agent an `mp.weixin.qq.com/s/...` link and ask it to download the videos/images — it will follow the SKILL.md workflow.
+
+### Option 2: Run the script directly
+
+`scripts/download.py` is a single-file, zero-dependency script (pure Python 3.7+ stdlib). Clone or download it, then run:
 
 ```bash
 git clone https://github.com/xccElephant/wechat-article-media-download.git
 cd wechat-article-media-download
-
-# Or, without git: just download the single file
-# curl -O https://raw.githubusercontent.com/xccElephant/wechat-article-media-download/main/scripts/download.py
-```
-
-That's it — no `pip install` needed.
-
-## Usage
-
-```bash
-python3 scripts/download.py <article_url> [output_dir]
-
-# Example
 python3 scripts/download.py "https://mp.weixin.qq.com/s/ICb4P_FqTZVgaeMvZs_9dg" ./output
 ```
 
-On Windows (PowerShell), use `python` instead of `python3`:
-```powershell
-python scripts/download.py "https://mp.weixin.qq.com/s/..." .\output
-```
+On Windows (PowerShell), use `python` instead of `python3`.
 
 Output structure:
 
