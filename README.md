@@ -1,5 +1,7 @@
 # wechat-article-media-download
 
+中文 | [English](README_EN.md)
+
 下载微信公众号文章内嵌的**全部视频和图片**，无需微信客户端、无需登录、无需任何 token。
 
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org/)
@@ -14,6 +16,41 @@
 - 每个视频自动选择最佳清晰度（优先 `f10002` 超清 H.264）
 
 不调用任何微信接口——`videoplayer` 系列接口目前已全部要求会话鉴权，匿名调用拿不到播放地址，此路不通。
+
+## 安装
+
+脚本为**单文件、零第三方依赖**（纯 Python 标准库），只需 Python 3.7+。
+
+### 1. 安装 Python（已有可跳过）
+
+**macOS**
+```bash
+python3 --version        # 先检查
+brew install python      # 没有则安装
+```
+或从 [python.org/downloads](https://www.python.org/downloads/) 下载安装包。
+
+**Windows**
+- 从 [python.org/downloads](https://www.python.org/downloads/) 下载安装
+- ⚠️ 安装时勾选 **"Add python.exe to PATH"**
+- PowerShell 中验证：`python --version`
+
+**Linux (Debian/Ubuntu)**
+```bash
+sudo apt update && sudo apt install -y python3
+```
+
+### 2. 获取脚本
+
+```bash
+git clone https://github.com/xccElephant/wechat-article-media-download.git
+cd wechat-article-media-download
+
+# 没有 git 也可以只下载单个文件：
+# curl -O https://raw.githubusercontent.com/xccElephant/wechat-article-media-download/main/scripts/download.py
+```
+
+完毕——无需 `pip install`。
 
 ## 使用
 
