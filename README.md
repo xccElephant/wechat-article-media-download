@@ -2,20 +2,29 @@
 
 中文 | [English](README_EN.md)
 
-下载微信公众号文章内嵌的**全部视频和图片**，无需微信客户端、无需登录、无需任何 token。
+下载微信公众号文章内嵌的**全部视频和图片**，或提取**微信视频号短链（`weixin.qq.com/sph/...`）**的音视频与文字实录，无需微信客户端、无需登录、无需任何 token。
 
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ## 原理
 
-微信公众号文章（`mp.weixin.qq.com/s/...`）的网页源码末尾，内嵌了一段 JS 数据块，其中**已经包含每个视频各 4 种清晰度的带签名直链**（`mpvideo.qpic.cn`，含 `dis_k` / `auth_key` 签名参数）。本工具直接从源码中提取这些直链并下载：
+### 1. 微信公众号文章（`mp.weixin.qq.com/s/...`）
+微信公众号文章的网页源码末尾，内嵌了一段 JS 数据块，其中**已经包含每个视频各 4 种清晰度的带签名直链**（`mpvideo.qpic.cn`，含 `dis_k` / `auth_key` 签名参数）。本工具直接从源码中提取这些直链并下载：
 
 - 图片：`data-src` 属性中的 `mmbiz.qpic.cn` 公开地址，永久有效
 - 视频：内嵌 JS 数据块中的签名直链，**约 7 天内有效**，支持并行下载
 - 每个视频自动选择最佳清晰度（优先 `f10002` 超清 H.264）
 
 不调用任何微信接口——`videoplayer` 系列接口目前已全部要求会话鉴权，匿名调用拿不到播放地址，此路不通。
+
+### 2. 微信视频号短链（`weixin.qq.com/sph/...`）
+微信视频号短链在外部浏览器打开时会 301 重定向到 `channels.weixin.qq.com/finder-preview/pages/sph?id=...`，仅渲染扫码提示且隐藏 `<video>` 直链（裸 `curl` 调接口也会因缺少前端签名器报 `permission verification failed`）。Agent 按 `SKILL.md` 中的 **Scenario B** 流程处理：
+
+1. **页面内签名提取元数据**：通过浏览器 CDP 在预览页内调用前端 `merlin.*.js` 模块的 `getFeedInfo`（或读取渲染后的 DOM），无需登录即可获取完整的 `authorInfo.nickname`（作者）、`feedInfo.description`（完整文案）、发布时间与封面图。
+2. **跨平台同源回退**：中长视频创作者普遍在 Bilibili / 抖音精选同步分发同源视频，利用作者名 + 精确文案定位同源完整视频。
+3. **多线程 `Range` 分片下载纯音频流**：避免单连接下载长音频被 CDN 静默截断，并用 `ffprobe` 校验完整时长。
+4. **本地 GPU 切片转写（`mlx_whisper`）**：按 300s 切片并注入文案中的专有名词作为 `initial_prompt`，快速生成带时间戳的完整文字实录。
 
 ## 安装
 

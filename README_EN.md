@@ -2,13 +2,14 @@
 
 [中文](README.md) | English
 
-Download **all videos and images** embedded in a WeChat Official Account article — no WeChat client, no login, no tokens required.
+Download **all videos and images** embedded in a WeChat Official Account article, or extract audio/transcripts from **WeChat Channels short links (`weixin.qq.com/sph/...`)** — no WeChat client, no login, no tokens required.
 
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ## How It Works
 
+### 1. WeChat Official Account Articles (`mp.weixin.qq.com/s/...`)
 At the end of a WeChat article page (`mp.weixin.qq.com/s/...`), the HTML source contains an inline JS data block that **already includes signed direct URLs for each video in 4 quality levels** (`mpvideo.qpic.cn`, with `dis_k` / `auth_key` signature parameters). This tool extracts those URLs straight from the source and downloads them:
 
 - **Images**: public `mmbiz.qpic.cn` URLs found in `data-src` attributes — permanently valid
@@ -16,6 +17,14 @@ At the end of a WeChat article page (`mp.weixin.qq.com/s/...`), the HTML source 
 - Each video automatically selects the best quality (prefers `f10002` — 1080p H.264, best compatibility)
 
 No WeChat API is called — the `videoplayer` API family now requires an authenticated session and returns nothing useful to anonymous callers, so that path is a dead end.
+
+### 2. WeChat Channels Short Links (`weixin.qq.com/sph/...`)
+Outside the WeChat client, `weixin.qq.com/sph/<shortUri>` redirects to `channels.weixin.qq.com/finder-preview/pages/sph?id=<shortUri>` and only displays a QR code without exposing `h264Url`/`h265Url` (and raw `curl` calls to `get_feed_info` fail with `permission verification failed` due to missing frontend request signatures). Following **Scenario B** in `SKILL.md`, the agent:
+
+1. **Extracts signed metadata in-page via CDP**: Calls the page's `merlin.*.js` `getFeedInfo` client (or reads the rendered DOM) to retrieve `authorInfo.nickname`, `feedInfo.description`, `createtime`, and `coverUrl` without login.
+2. **Resolves cross-platform identical sources**: Uses the exact author name and description to locate the creator's identical upload on Bilibili / Douyin.
+3. **Downloads the audio stream via parallel `Range` requests**: Prevents mid-stream CDN truncation on long videos and verifies full duration via `ffprobe`.
+4. **Transcribes locally on Apple Silicon GPU (`mlx_whisper`)**: Splits audio into 300s chunks with domain proper nouns injected into `initial_prompt` to produce a complete timestamped transcript.
 
 ## Installation
 
